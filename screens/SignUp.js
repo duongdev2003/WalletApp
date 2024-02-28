@@ -18,6 +18,34 @@ import {COLORS, SIZES, FONTS, icons, images} from '../constants';
 const SignUp = () => {
     const [showPassword, setShowPassword] = React.useState(false);
 
+    const [areas, setAreas] = React.useState([]);
+    const [selectedArea, setSelectedArea] = React.useState(null);
+    const [modalVisible, setModalVisible] = React.useState(false);
+
+    React.useEffect(() => {
+        fetch('https://restcountries.com/v3.1/all')
+            .then(response => response.json())
+            .then(data => {
+                let areaData = data.map(item => {
+                    return {
+                        code: item.alpha2Code,
+                        name: item.name,
+                        callingCode: `+${item.callingCodes[0]}`,
+                        flag: `https://flagsapi.com/${item.alpha2Code}/flat/64.png`,
+                    };
+                });
+
+                setAreas(areaData);
+                if (areaData.length > 0) {
+                    let defaultData = areaData.filter(a => a.code == 'US');
+
+                    if (defaultData.length > 0) {
+                        setSelectedArea(defaultData[0]);
+                    }
+                }
+            });
+    }, []);
+
     function renderHeader() {
         return (
             <TouchableOpacity
@@ -114,7 +142,7 @@ const SignUp = () => {
                             </View>
                             <View style={{justifyContent: 'center', marginLeft: 5}}>
                                 <Image
-                                    source={images.usFlag}
+                                    source={{uri: selectedArea?.flag}}
                                     resizeMode="contain"
                                     style={{
                                         width: 30,
@@ -168,9 +196,9 @@ const SignUp = () => {
                             height: 30,
                             width: 30,
                         }}
-                        onPress={() => setShowPassword(showPassword)}>
+                        onPress={() => setShowPassword(!showPassword)}>
                         <Image
-                            source={icons.eye}
+                            source={showPassword ? icons.disable_eye : icons.eye}
                             style={{
                                 height: 20,
                                 width: 20,
