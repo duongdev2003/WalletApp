@@ -4,13 +4,14 @@ import {createBottomTabNavigator, BottomTabBar} from '@react-navigation/bottom-t
 import Svg, {Path} from 'react-native-svg';
 import {isIphoneX} from 'react-native-iphone-x-helper';
 
-import Home from '../screens/Home';
-import Scan from '../screens/Scan';
+import {Home, Scan} from '../screens';
 import {COLORS, icons} from '../constants';
 
 const Tab = createBottomTabNavigator();
+
 const TabBarCustomButton = ({accessibilityLabel, accessibilityState, children, onPress}) => {
     var isSelected = accessibilityState.selected;
+
     if (isSelected) {
         return (
             <View style={{flex: 1, alignItems: 'center'}}>
@@ -29,11 +30,12 @@ const TabBarCustomButton = ({accessibilityLabel, accessibilityState, children, o
                     </Svg>
                     <View style={{flex: 1, backgroundColor: COLORS.white}}></View>
                 </View>
+
                 <TouchableOpacity
                     style={{
                         top: -22.5,
                         justifyContent: 'center',
-                        alignContent: 'center',
+                        alignItems: 'center',
                         width: 50,
                         height: 50,
                         borderRadius: 25,
@@ -64,6 +66,27 @@ const TabBarCustomButton = ({accessibilityLabel, accessibilityState, children, o
     }
 };
 
+const CustomTabBar = props => {
+    if (isIphoneX()) {
+        return (
+            <View>
+                <View
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 30,
+                        backgroundColor: COLORS.white,
+                    }}></View>
+                <BottomTabBar {...props.props} />
+            </View>
+        );
+    } else {
+        return <BottomTabBar {...props.props} />;
+    }
+};
+
 const Tabs = () => {
     return (
         <Tab.Navigator
@@ -79,7 +102,8 @@ const Tabs = () => {
                     backgroundColor: 'transparent',
                     borderTopColor: 'transparent',
                 },
-            }}>
+            }}
+            tabBar={props => <CustomTabBar props={props} />}>
             <Tab.Screen
                 name="Home"
                 component={Home}

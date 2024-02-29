@@ -1,7 +1,13 @@
+/**
+ * Author: ByProgrammers
+ */
+
 import React from 'react';
+
+import {SignUp} from './screens';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import SignUp from './screens/SignUp';
+
 import Tabs from './navigation/tabs';
 
 const theme = {
@@ -25,7 +31,9 @@ const App = () => {
                 <Stack.Screen name="SignUp" component={SignUp} />
 
                 {/* Tabs */}
-                <Stack.Screen name="Home" component={Tabs} />
+                <Stack.Screen name="HomeTabs" component={Tabs} />
+
+                {/* <Stack.Screen name="Scan" component={Scan} /> */}
             </Stack.Navigator>
         </NavigationContainer>
     );

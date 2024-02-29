@@ -3,7 +3,7 @@ import {
     View,
     Text,
     TouchableOpacity,
-    TouchableNativeFeedback,
+    TouchableWithoutFeedback,
     Image,
     TextInput,
     Modal,
@@ -13,6 +13,7 @@ import {
     Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import {COLORS, SIZES, FONTS, icons, images} from '../constants';
 
 const SignUp = ({navigation}) => {
@@ -23,21 +24,21 @@ const SignUp = ({navigation}) => {
     const [modalVisible, setModalVisible] = React.useState(false);
 
     React.useEffect(() => {
-        fetch('https://restcountries.com/v3.1/all')
+        fetch('https://restcountries.com/v3.1/all?fields=name,flags,cca3,idd')
             .then(response => response.json())
             .then(data => {
                 let areaData = data.map(item => {
                     return {
-                        code: item.alpha2Code,
-                        name: item.name,
-                        callingCode: `+${item.callingCodes[0]}`,
-                        flag: `https://flagsapi.com/${item.alpha2Code}/flat/64.png`,
+                        code: item.cca3,
+                        name: item.name?.common,
+                        flag: item.flags.png,
+                        callingCode: item.idd?.root + item.idd?.suffixes[0],
                     };
                 });
-
                 setAreas(areaData);
+
                 if (areaData.length > 0) {
-                    let defaultData = areaData.filter(a => a.code == 'US');
+                    let defaultData = areaData.filter(a => a.code == 'CY');
 
                     if (defaultData.length > 0) {
                         setSelectedArea(defaultData[0]);
@@ -65,6 +66,7 @@ const SignUp = ({navigation}) => {
                         tintColor: COLORS.white,
                     }}
                 />
+
                 <Text style={{marginLeft: SIZES.padding * 1.5, color: COLORS.white, ...FONTS.h4}}>Sign Up</Text>
             </TouchableOpacity>
         );
@@ -114,9 +116,11 @@ const SignUp = ({navigation}) => {
                         selectionColor={COLORS.white}
                     />
                 </View>
+
                 {/* Phone Number */}
                 <View style={{marginTop: SIZES.padding * 2}}>
                     <Text style={{color: COLORS.lightGreen, ...FONTS.body3}}>Phone Number</Text>
+
                     <View style={{flexDirection: 'row'}}>
                         {/* Country Code */}
                         <TouchableOpacity
@@ -150,10 +154,12 @@ const SignUp = ({navigation}) => {
                                     }}
                                 />
                             </View>
+
                             <View style={{justifyContent: 'center', marginLeft: 5}}>
                                 <Text style={{color: COLORS.white, ...FONTS.body3}}>{selectedArea?.callingCode}</Text>
                             </View>
                         </TouchableOpacity>
+
                         {/* Phone Number */}
                         <TextInput
                             style={{
@@ -171,6 +177,7 @@ const SignUp = ({navigation}) => {
                         />
                     </View>
                 </View>
+
                 {/* Password */}
                 <View style={{marginTop: SIZES.padding * 2}}>
                     <Text style={{color: COLORS.lightGreen, ...FONTS.body3}}>Password</Text>
@@ -211,6 +218,24 @@ const SignUp = ({navigation}) => {
         );
     }
 
+    function renderButton() {
+        return (
+            <View style={{margin: SIZES.padding * 3}}>
+                <TouchableOpacity
+                    style={{
+                        height: 60,
+                        backgroundColor: COLORS.black,
+                        borderRadius: SIZES.radius / 1.5,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                    onPress={() => navigation.navigate('HomeTabs')}>
+                    <Text style={{color: COLORS.white, ...FONTS.h3}}>Continue</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     function renderAreaCodesModal() {
         const renderItem = ({item}) => {
             return (
@@ -235,7 +260,7 @@ const SignUp = ({navigation}) => {
 
         return (
             <Modal animationType="slide" transparent={true} visible={modalVisible}>
-                <TouchableNativeFeedback onPress={() => setModalVisible(false)}>
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                         <View
                             style={{
@@ -247,7 +272,7 @@ const SignUp = ({navigation}) => {
                             <FlatList
                                 data={areas}
                                 renderItem={renderItem}
-                                keyExtractor={() => item.code}
+                                keyExtractor={item => item.code}
                                 showsVerticalScrollIndicator={false}
                                 style={{
                                     padding: SIZES.padding * 2,
@@ -256,26 +281,8 @@ const SignUp = ({navigation}) => {
                             />
                         </View>
                     </View>
-                </TouchableNativeFeedback>
+                </TouchableWithoutFeedback>
             </Modal>
-        );
-    }
-
-    function renderButton() {
-        return (
-            <View style={{margin: SIZES.padding * 3}}>
-                <TouchableOpacity
-                    style={{
-                        height: 60,
-                        backgroundColor: COLORS.black,
-                        borderRadius: SIZES.radius / 1.5,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress={() => navigation.navigate('Home')}>
-                    <Text style={{color: COLORS.white, ...FONTS.h3}}>Continue</Text>
-                </TouchableOpacity>
-            </View>
         );
     }
 
